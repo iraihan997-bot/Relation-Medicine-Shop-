@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Relation Medicine Shop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f8fb;
+}
+header{
+  background:linear-gradient(135deg,#0b6efd,#20c997);
+  color:#fff;
+  text-align:center;
+  padding:20px;
+}
+header h1{margin:0;}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+h2{color:#0b6efd;}
+.form-box, .medicine{
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom:20px;
+}
+input, textarea, button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  background:#20c997;
+  color:#fff;
+  font-weight:bold;
+  border:none;
+  cursor:pointer;
+}
+.search{
+  margin:20px 0;
+}
+.medicine-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:15px;
+}
+.medicine img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:8px;
+}
+.price{
+  margin:5px 0;
+}
+.mrp{color:#dc3545;font-weight:bold;}
+.net{color:#198754;font-weight:bold;}
+footer{
+  text-align:center;
+  padding:12px;
+  background:#e8f1ff;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Relation Medicine Shop</h1>
+  <p>Medicine Management Website</p>
+</header>
+
+<div class="container">
+
+<h2>Add Medicine</h2>
+<div class="form-box">
+  <input type="text" id="mname" placeholder="Medicine Name">
+  <input type="text" id="uses" placeholder="Uses (English)">
+  <input type="number" id="mrp" placeholder="MRP">
+  <input type="number" id="net" placeholder="Net Rate">
+  <input type="file" id="photo" accept="image/*">
+  <button onclick="addMedicine()">Add Medicine</button>
+</div>
+
+<h2>Search Medicine</h2>
+<input class="search" type="text" id="search" placeholder="Search by medicine name..." onkeyup="searchMedicine()">
+
+<h2>Medicine List</h2>
+<div class="medicine-list" id="medicineList"></div>
+
+</div>
+
+<footer>
+© 2026 Relation Medicine Shop
+</footer>
+
+<script>
+let medicines = [];
+
+function addMedicine(){
+  const name = document.getElementById('mname').value;
+  const uses = document.getElementById('uses').value;
+  const mrp = document.getElementById('mrp').value;
+  const net = document.getElementById('net').value;
+  const photoInput = document.getElementById('photo');
+
+  if(!name || !mrp || !net){
+    alert('Please fill required fields');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(){
+    medicines.push({
+      name:name.toLowerCase(),
+      displayName:name,
+      uses:uses,
+      mrp:mrp,
+      net:net,
+      photo:reader.result
+    });
+    displayMedicines(medicines);
+  };
+
+  if(photoInput.files[0]){
+    reader.readAsDataURL(photoInput.files[0]);
+  }else{
+    reader.onload();
+  }
+
+  document.getElementById('mname').value='';
+  document.getElementById('uses').value='';
+  document.getElementById('mrp').value='';
+  document.getElementById('net').value='';
+  photoInput.value='';
+}
+
+function displayMedicines(list){
+  const box = document.getElementById('medicineList');
+  box.innerHTML='';
+  list.forEach(m=>{
+    box.innerHTML += `
+      <div class="medicine">
+        ${m.photo ? `<img src="${m.photo}">` : ''}
+        <h3>${m.displayName}</h3>
+        <p>${m.uses}</p>
+        <p class="price">MRP: <span class="mrp">₹${m.mrp}</span></p>
+        <p class="price">Net: <span class="net">₹${m.net}</span></p>
+      </div>
+    `;
+  });
+}
+
+function searchMedicine(){
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = medicines.filter(m=>m.name.includes(q));
+  displayMedicines(filtered);
+}
+</script>
+
+</body>
+</html>
